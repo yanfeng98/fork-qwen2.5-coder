@@ -1,20 +1,14 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
-device = "cuda" # the device to load the model onto
 
 model_name = "Qwen/Qwen2.5-Coder-0.5B"
 
-# Now you do not need to add "trust_remote_code=True"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto").eval()
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
 
-
-# tokenize the input into tokens
 input_text = "#write a quick sort algorithm"
-model_inputs = tokenizer([input_text], return_tensors="pt").to(device)
+model_inputs = tokenizer([input_text], return_tensors="pt").to(model.device)
 
-# Use `max_new_tokens` to control the maximum output length.
 generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=1024, do_sample=False)[0]
-# The generated_ids include prompt_ids, so we only need to decode the tokens after prompt_ids.
 output_text = tokenizer.decode(generated_ids[len(model_inputs.input_ids[0]):], skip_special_tokens=True)
 
 print(f"Prompt: {input_text}\n\nGenerated text: {output_text}")
