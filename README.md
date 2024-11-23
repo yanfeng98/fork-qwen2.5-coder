@@ -92,19 +92,15 @@ Today, we are excited to open source the “Powerful”, “Diverse”, and “P
 | Qwen2.5-Coder-32B-Instruct-GPTQ-Int8   | instruct | 128k   | 🤗 [Hugging Face](https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct-GPTQ-Int8) • 🤖 [ModelScope](https://modelscope.cn/models/Qwen/Qwen2.5-Coder-32B-Instruct-GPTQ-Int8) |
 
 ## Requirements
+
 * `python>=3.9`
 * `transformers>4.37.0` for Qwen2.5 dense models.
 
-> [!Warning]
-> <div align="center">
-> <b>
-> 🚨 This is a must because `transformers` integrated Qwen2 codes since `4.37.0`.
-> </b>
-> </div>
-
-You can install the required packages with the following command:
 ```bash
-pip install -r requirements.txt
+$ python -m venv env
+$ source env/bin/activate
+$ pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple/
+$ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
 ```
 
 ## Quick Start
@@ -114,13 +110,14 @@ pip install -r requirements.txt
 >
 > **Qwen2.5-Coder-\[0.5-32\]B** is a base model typically used for completion, serving as a better starting point for fine-tuning.
 >
-### 👉🏻 Chat with Qwen2.5-Coder-32B-Instruct
-You can just write several lines of code with `transformers` to chat with Qwen2.5-Coder-32B-Instruct. Essentially, we build the tokenizer and the model with `from_pretrained` method, and we use generate method to perform chatting with the help of chat template provided by the tokenizer. Below is an example of how to chat with Qwen2.5-Coder-32B-Instruct:
+### 👉🏻 Chat with Qwen2.5-Coder-0.5B-Instruct
+
+You can just write several lines of code with `transformers` to chat with Qwen2.5-Coder-0.5B-Instruct. Essentially, we build the tokenizer and the model with `from_pretrained` method, and we use generate method to perform chatting with the help of chat template provided by the tokenizer. Below is an example of how to chat with Qwen2.5-Coder-0.5B-Instruct:
 
 ```python
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-model_name = "Qwen/Qwen2.5-Coder-32B-Instruct"
+model_name = "Qwen/Qwen2.5-Coder-0.5B-Instruct"
 
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
@@ -151,6 +148,7 @@ generated_ids = [
 
 response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
 ```
+
 The `apply_chat_template()` function is used to convert the messages into a format that the model can understand.
 The `add_generation_prompt` argument is used to add a generation prompt, which refers to `<|im_start|>assistant\n` to the input. Notably, we apply ChatML template for chat models following our previous practice.
 The `max_new_tokens` argument is used to set the maximum length of the response. The `tokenizer.batch_decode()` function is used to decode the response. In terms of the input, the above messages is an example to show how to format your dialog history and system prompt.
