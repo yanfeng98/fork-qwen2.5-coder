@@ -1,42 +1,42 @@
-# Use Qwen2.5-Coder-32B-Instruct By transformers
-The most significant but also the simplest usage of Qwen2.5-Coder-32B-Instruct is using the `transformers` library. In this document, we show how to chat with Qwen2.5-Coder-32B-Instruct in either streaming mode or not.
+# Use Qwen2.5-Coder-0.5B-Instruct By transformers
+The most significant but also the simplest usage of Qwen2.5-Coder-0.5B-Instruct is using the `transformers` library. In this document, we show how to chat with Qwen2.5-Coder-0.5B-Instruct in either streaming mode or not.
 
 ## Basic Usage
-You can just write several lines of code with `transformers` to chat with Qwen2.5-Coder-32B-Instruct. Essentially, we build the tokenizer and the model with `from_pretrained` method, and we use generate method to perform chatting with the help of chat template provided by the tokenizer. Below is an example of how to chat with Qwen2.5-Coder-32B-Instruct:
+You can just write several lines of code with `transformers` to chat with Qwen2.5-Coder-0.5B-Instruct. Essentially, we build the tokenizer and the model with `from_pretrained` method, and we use generate method to perform chatting with the help of chat template provided by the tokenizer. Below is an example of how to chat with Qwen2.5-Coder-0.5B-Instruct:
 
 ```python
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
-model_name = "Qwen/Qwen2.5-Coder-32B-Instruct"
+model_name = "Qwen/Qwen2.5-Coder-0.5B-Instruct"
 
+tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype="auto",
     device_map="auto"
 )
-tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 prompt = "write a quick sort algorithm."
 messages = [
     {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
     {"role": "user", "content": prompt}
 ]
-text = tokenizer.apply_chat_template(
+input_ids = tokenizer.apply_chat_template(
     messages,
-    tokenize=False,
-    add_generation_prompt=True
-)
-model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+    add_generation_prompt=True,
+    return_tensors="pt"
+).to(model.device)
 
-generated_ids = model.generate(
-    **model_inputs,
-    max_new_tokens=512
+outputs = model.generate(
+    input_ids,
+    max_new_tokens=2048,
+    do_sample=True,
+    temperature=0.6,
+    top_p=0.9,
 )
-generated_ids = [
-    output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
-]
 
-response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+response = outputs[0][input_ids.shape[-1]:]
+print(tokenizer.decode(response, skip_special_tokens=True))
 ```
 
 The `apply_chat_template()` function is used to convert the messages into a format that the model can understand. 
