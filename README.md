@@ -240,6 +240,7 @@ print(f"Prompt: {input_text}\n\nGenerated text: {output_text}")
 ```
 
 #### 4. Repository-Level Code Completion
+
 The repository level code completion task involves feeding the model the content of multiple files from the same repository. This enables the model to understand the interrelationships between different calls within these files, thereby facilitating the completion of code content.
 We recommend using the two special tokens `<|repo_name|>` and `<|file_sep|>` to indicate the repository structure.
 For example, assuming the repository name is stored in `repo_name`, and it contains files with their respective paths and contents listed as [(`file_path1`, `file_content1`), (`file_path2`, `file_content2`)], the format of the final input prompt would be as follows:
@@ -251,7 +252,7 @@ input_text = f'''<|repo_name|>{repo_name}
 {file_content2}'''
 ```
 
-<details><summary>👇🏻 Below is a complete example of a repository level code completion task: <i>:: click to expand ::</i></summary>
+<details><summary>👇🏻 Below is a complete example of a repository level code completion task:</summary>
 <div>
 
 ```python
@@ -366,6 +367,7 @@ main()
 </details>
 
 ### 👉🏻 Deploying Qwen2.5-Coder with vLLM
+
 As a family member of Qwen2.5, Qwen2.5-Coder are supported by vLLM. The detail tutorial  could be found in [Qwen tutorial](https://qwen.readthedocs.io/en/latest/deployment/vllm.html).
 Here, we give you an simple example of offline batched inference in vLLM.
 
@@ -422,36 +424,6 @@ python app.py
 ```
 
 You can specify the `--server_port`, `--share`, `--server_name` arguments to satisfy your needs!
-
-**Or, try it out effortlessly on HuggingFace: [「chatbot demo」](https://huggingface.co/spaces/Qwen/Qwen2.5-Coder-demo) 🤗 [「artifacts demo」](https://huggingface.co/spaces/Qwen/Qwen2.5-Coder-Artifacts)**
-
-## Performance
-For more information, please  refer to the <a href="https://arxiv.org/abs/2409.12186">Qwen2.5-Coder Technical Report</a>.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=QwenLM/Qwen2.5-Coder&type=Date)](https://star-history.com/#QwenLM/Qwen2.5-Coder&Date)
-
-## Citation
-If you find our work helpful, feel free to give us a cite.
-
-```bibtex
-@article{hui2024qwen2,
-  title={Qwen2. 5-Coder Technical Report},
-  author={Hui, Binyuan and Yang, Jian and Cui, Zeyu and Yang, Jiaxi and Liu, Dayiheng and Zhang, Lei and Liu, Tianyu and Zhang, Jiajun and Yu, Bowen and Dang, Kai and others},
-  journal={arXiv preprint arXiv:2409.12186},
-  year={2024}
-}
-@article{qwen2,
-    title={Qwen2 Technical Report},
-    author={An Yang and Baosong Yang and Binyuan Hui and Bo Zheng and Bowen Yu and Chang Zhou and Chengpeng Li and Chengyuan Li and Dayiheng Liu and Fei Huang and Guanting Dong and Haoran Wei and Huan Lin and Jialong Tang and Jialin Wang and Jian Yang and Jianhong Tu and Jianwei Zhang and Jianxin Ma and Jin Xu and Jingren Zhou and Jinze Bai and Jinzheng He and Junyang Lin and Kai Dang and Keming Lu and Keqin Chen and Kexin Yang and Mei Li and Mingfeng Xue and Na Ni and Pei Zhang and Peng Wang and Ru Peng and Rui Men and Ruize Gao and Runji Lin and Shijie Wang and Shuai Bai and Sinan Tan and Tianhang Zhu and Tianhao Li and Tianyu Liu and Wenbin Ge and Xiaodong Deng and Xiaohuan Zhou and Xingzhang Ren and Xinyu Zhang and Xipin Wei and Xuancheng Ren and Yang Fan and Yang Yao and Yichang Zhang and Yu Wan and Yunfei Chu and Yuqiong Liu and Zeyu Cui and Zhenru Zhang and Zhihao Fan},
-    journal={arXiv preprint arXiv:2407.10671},
-    year={2024}
-}
-```
-
-## Contact Us
-If you are interested to leave a message to either our research team or product team, join our [Discord](https://discord.gg/z3GAxXZ9Ce) or [WeChat groups](https://github.com/QwenLM/Qwen/blob/main/assets/wechat.png)!
 
 <p align="right" style="font-size: 14px; color: #555; margin-top: 20px;">
     <a href="#readme-top" style="text-decoration: none; color: #007bff; font-weight: bold;">
