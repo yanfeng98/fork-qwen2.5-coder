@@ -154,20 +154,22 @@ The `add_generation_prompt` argument is used to add a generation prompt, which r
 The `max_new_tokens` argument is used to set the maximum length of the response. The `tokenizer.batch_decode()` function is used to decode the response. In terms of the input, the above messages is an example to show how to format your dialog history and system prompt.
 You can use the other size of instruct model in the same way.
 
-### 👉🏻 Code with Qwen2.5-Coder-32B
+### 👉🏻 Code with Qwen2.5-Coder-0.5B
 
 #### 1. Basic Usage
+
 The model completes the code snippets according to the given prompts, without any additional formatting, which is usually termed as `code completion` in the code generation tasks.
 
-Essentially, we build the tokenizer and the model with `from_pretrained` method, and we use generate method to perform code completion. Below is an example on how to chat with Qwen2.5-Coder-32B:
+Essentially, we build the tokenizer and the model with `from_pretrained` method, and we use generate method to perform code completion. Below is an example on how to chat with Qwen2.5-Coder-0.5B:
+
 ```python
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 device = "cuda" # the device to load the model onto
 
 # Now you do not need to add "trust_remote_code=True"
-TOKENIZER = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-32B")
-MODEL = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-32B", device_map="auto").eval()
+TOKENIZER = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
+MODEL = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-0.5B", device_map="auto").eval()
 
 # tokenize the input into tokens
 input_text = "#write a quick sort algorithm"
@@ -180,9 +182,9 @@ output_text = TOKENIZER.decode(generated_ids[len(model_inputs.input_ids[0]):], s
 
 print(f"Prompt: {input_text}\n\nGenerated text: {output_text}")
 ```
+
 The `max_new_tokens` argument is used to set the maximum length of the response.
 The `input_text` could be any text that you would like model to continue with.
-
 
 #### 2. Processing Long Texts
 
@@ -215,8 +217,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 # load model
 device = "cuda" # the device to load the model onto
 
-TOKENIZER = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-32B")
-MODEL = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-32B", device_map="auto").eval()
+TOKENIZER = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
+MODEL = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-0.5B", device_map="auto").eval()
 
 input_text = """<|fim_prefix|>def quicksort(arr):
     if len(arr) <= 1:
@@ -257,8 +259,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 device = "cuda" # the device to load the model onto
 
 # Now you do not need to add "trust_remote_code=True"
-TOKENIZER = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-32B")
-MODEL = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-32B", device_map="auto").eval()
+TOKENIZER = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
+MODEL = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-0.5B", device_map="auto").eval()
 
 # tokenize the input into tokens
 input_text = """<|repo_name|>library-system
@@ -372,14 +374,14 @@ Here, we give you an simple example of offline batched inference in vLLM.
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
 # Initialize the tokenizer
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-32B")
+tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
 
 # Pass the default decoding hyperparameters of Qwen1.5-32B-Chat
 # max_tokens is for the maximum length for generation.
 sampling_params = SamplingParams(temperature=0.7, top_p=0.8, repetition_penalty=1.05, max_tokens=1024)
 
 # Input the model name or path. Can be GPTQ or AWQ models.
-llm = LLM(model="Qwen/Qwen2.5-Coder-32B")
+llm = LLM(model="Qwen/Qwen2.5-Coder-0.5B")
 
 # Prepare your prompts
 prompt = "#write a quick sort algorithm.\ndef quick_sort("
@@ -396,9 +398,9 @@ for output in outputs:
 
 #### Multi-GPU Distributed Serving
 To scale up your serving throughputs, distributed serving helps you by leveraging more GPU devices.
-When using ultra-long sequences for inference, it might cause insufficient GPU memory. Here, we demonstrate how to run Qwen2.5-Coder-32B with tensor parallelism just by passing in the argument `tensor_parallel_size`.
+When using ultra-long sequences for inference, it might cause insufficient GPU memory. Here, we demonstrate how to run Qwen2.5-Coder-0.5B with tensor parallelism just by passing in the argument `tensor_parallel_size`.
 ```python
-llm = LLM(model="Qwen/Qwen2.5-Coder-32B", tensor_parallel_size=8)
+llm = LLM(model="Qwen/Qwen2.5-Coder-0.5B", tensor_parallel_size=8)
 ```
 ### 👉🏻 Gradio interface 🤗
 
