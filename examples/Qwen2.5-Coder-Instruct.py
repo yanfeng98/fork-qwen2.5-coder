@@ -1,9 +1,11 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
+model_name = "Qwen/Qwen2.5-Coder-0.5B-Instruct"
+
 # Now you do not need to add "trust_remote_code=True"
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B-Instruct")
+tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(
-    "Qwen/Qwen2.5-Coder-0.5B-Instruct",
+    model_name,
     torch_dtype="auto",
     device_map="auto"
 )
