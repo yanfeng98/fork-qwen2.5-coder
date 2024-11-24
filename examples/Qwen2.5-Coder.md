@@ -6,27 +6,24 @@ One of the simple but fundamental ways to try Qwen2.5-Coder-0.5B is to use the `
 The model completes the code snipplets according to the given prompts, without any additional formatting, which is usually termed as `code completion` in the code generation tasks.
  
 Essentially, we build the tokenizer and the model with `from_pretrained` method, and we use generate method to perform code completion. Below is an example on how to chat with Qwen2.5-Coder-0.5B:
+
 ```python
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-device = "cuda" # the device to load the model onto
+model_name = "Qwen/Qwen2.5-Coder-0.5B"
 
-# Now you do not need to add "trust_remote_code=True"
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
-model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-0.5B", device_map="auto").eval()
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
 
-# tokenize the input into tokens
 input_text = "#write a quick sort algorithm"
-model_inputs = tokenizer([input_text], return_tensors="pt").to(device)
+model_inputs = tokenizer([input_text], return_tensors="pt").to(model.device)
 
-# Use `max_new_tokens` to control the maximum output length.
-eos_token_ids = [151664, 151662, 151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
-generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=512, do_sample=False, eos_token_id=eos_token_ids)[0]
-# The generated_ids include prompt_ids, so we only need to decode the tokens after prompt_ids.
+generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=1024, do_sample=False)[0]
 output_text = tokenizer.decode(generated_ids[len(model_inputs.input_ids[0]):], skip_special_tokens=True)
 
 print(f"Prompt: {input_text}\n\nGenerated text: {output_text}")
 ```
+
 The `max_new_tokens` argument is used to set the maximum length of the response.
 The `input_text` could be any text that you would like model to continue with.
 
