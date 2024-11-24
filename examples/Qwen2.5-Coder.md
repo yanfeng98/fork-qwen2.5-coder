@@ -310,36 +310,33 @@ Generated text:
 ```
 
 # Use Qwen2.5-Coder-0.5B By vllm
-As a family member of Qwen2.5, Qwen2.5-Coder-0.5B are supported by vLLM. The detail tutorial  could be found in [Qwen tutorial](https://qwen.readthedocs.io/en/latest/deployment/vllm.html). 
-Here, we only give you an simple example of offline batched inference in vLLM.
+
+As a family member of Qwen2.5, Qwen2.5-Coder-0.5B are supported by vLLM. The detail tutorial  could be found in [Qwen tutorial](https://qwen.readthedocs.io/en/latest/deployment/vllm.html). Here, we only give you an simple example of offline batched inference in vLLM.
 
 ## Offline Batched Inference
 
 ```python
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
-# Initialize the tokenizer
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
 
-# Pass the default decoding hyperparameters of Qwen1.5-32B-Chat
-# max_tokens is for the maximum length for generation.
-eos_token_ids = [151664, 151662, 151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
+model_name = "Qwen/Qwen2.5-Coder-0.5B"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+eos_token_ids = [151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
 sampling_params = SamplingParams(temperature=0.7, top_p=0.8, repetition_penalty=1.05, max_tokens=1024, stop_token_ids=eos_token_ids)
 
-# Input the model name or path. Can be GPTQ or AWQ models.
-llm = LLM(model="Qwen/Qwen2.5-Coder-0.5B")
+llm = LLM(model=model_name)
 
-# Prepare your prompts
 prompt = "#write a quick sort algorithm.\ndef quick_sort("
 
-# generate outputs
 outputs = llm.generate([prompt], sampling_params)
 
-# Print the outputs.
 for output in outputs:
     prompt = output.prompt
     generated_text = output.outputs[0].text
-    print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+    # print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+    print(f"Prompt:\n\n{prompt}\n\nGenerated text:\n\n{generated_text}")
 ```
 
 ## Multi-GPU Distributred Serving
