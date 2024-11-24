@@ -28,21 +28,23 @@ The `max_new_tokens` argument is used to set the maximum length of the response.
 The `input_text` could be any text that you would like model to continue with.
 
 ## Code Insertion (Fill in the middle)
-The code insertion task, also referred to as the "fill-in-the-middle" challenge, requires the insertion of code segments in a manner that bridges the gaps within a given code context. 
-For an approach aligned with best practices, we recommend adhering to the formatting guidelines outlined in the paper "Efficient Training of Language Models to Fill in the Middle"[[arxiv](https://arxiv.org/abs/2207.14255)]. This involves the use of three specialized tokens`<|fim_prefix|>`, `<|fim_suffix|>`, and `<|fim_middle|>` to denote the respective segments of the code structure. 
+
+The code insertion task, also referred to as the "fill-in-the-middle" challenge, requires the insertion of code segments in a manner that bridges the gaps within a given code context. For an approach aligned with best practices, we recommend adhering to the formatting guidelines outlined in the paper "Efficient Training of Language Models to Fill in the Middle"[[arxiv](https://arxiv.org/abs/2207.14255)]. This involves the use of three specialized tokens`<|fim_prefix|>`, `<|fim_suffix|>`, and `<|fim_middle|>` to denote the respective segments of the code structure. 
 The prompt should be structured as follows:
+
 ```python
 prompt = '<|fim_prefix|>' + prefix_code + '<|fim_suffix|>' + suffix_code + '<|fim_middle|>'
 ```
+
 Following the approach mentioned, an example would be structured in this manner:
 
 ```python
 from transformers import AutoTokenizer, AutoModelForCausalLM
-# load model
-device = "cuda" # the device to load the model onto
 
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
-model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-0.5B", device_map="auto").eval()
+model_name = "Qwen/Qwen2.5-Coder-0.5B"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
 
 input_text = """<|fim_prefix|>def quicksort(arr):
     if len(arr) <= 1:
@@ -53,12 +55,10 @@ input_text = """<|fim_prefix|>def quicksort(arr):
     right = [x for x in arr if x > pivot]
     return quicksort(left) + middle + quicksort(right)<|fim_middle|>"""
 
-model_inputs = tokenizer([input_text], return_tensors="pt").to(device)
+model_inputs = tokenizer([input_text], return_tensors="pt").to(model.device)
+eos_token_ids = [151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
 
-# Use `max_new_tokens` to control the maximum output length.
-eos_token_ids = [151664, 151662, 151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
 generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=512, do_sample=False, eos_token_id=eos_token_ids)[0]
-# The generated_ids include prompt_ids, we only need to decode the tokens after prompt_ids.
 output_text = tokenizer.decode(generated_ids[len(model_inputs.input_ids[0]):], skip_special_tokens=True)
 
 print(f"Prompt: {input_text}\n\nGenerated text: {output_text}")
