@@ -340,8 +340,10 @@ for output in outputs:
 ```
 
 ## Multi-GPU Distributred Serving
+
 To scale up your serving throughputs, distributed serving helps you by leveraging more GPU devices. 
 When using ultra-long sequences for inference, it might cause insufficient GPU memory. Here, we demonstrate how to run Qwen2.5-Coder-0.5B with tensor parallelism just by passing in the argument `tensor_parallel_size`
+
 ```python
 llm = LLM(model="Qwen/Qwen2.5-Coder-0.5B", tensor_parallel_size=8)
 ```
@@ -349,7 +351,6 @@ llm = LLM(model="Qwen/Qwen2.5-Coder-0.5B", tensor_parallel_size=8)
 ## Streaming Mode
 
 With the help of `TextStreamer`, you can modify generation with Qwen2.5-Coder to streaming mode. Below we show you an example of how to use it:
-
 
 ```python
 # Repeat the code above before model.generate()
