@@ -91,7 +91,7 @@ if __name__ == "__main__":
 """
 model_inputs = tokenizer([input_text], return_tensors="pt").to(model.device)
 
-eos_token_ids = [151659, 151661, 151662, 151663, 151664, 151643, 151645]
+eos_token_ids = [151659, 151660, 151661, 151662, 151663, 151664, 151643, 151645]
 generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=1024, do_sample=False, eos_token_id=eos_token_ids)[0]
 output_text = tokenizer.decode(generated_ids[len(model_inputs.input_ids[0]):], skip_special_tokens=True)
 
