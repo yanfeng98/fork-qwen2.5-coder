@@ -187,7 +187,9 @@ if __name__ == "__main__":
 ```
 
 ## Repository Level Code Infilling
+
 Repo level code infilling is essentially about concatenating the repo level format with the FIM format, as shown below,
+
 ```python
 input_text = f'''<|repo_name|>{repo_name}
 <|file_sep|>{file_path1} 
@@ -197,17 +199,17 @@ input_text = f'''<|repo_name|>{repo_name}
 <|file_sep|>{file_path2} 
 <|fim_prefix|>{prefix_code}<|fim_suffix|>{suffix_code}<|fim_middle|>'''
 ```
+
 Below is an example of a repository level code infilling task:
 
 ```python
 from transformers import AutoTokenizer, AutoModelForCausalLM
-device = "cuda" # the device to load the model onto
 
-# Now you do not need to add "trust_remote_code=True"
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
-model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-0.5B", device_map="auto").eval()
+model_name = "Qwen/Qwen2.5-Coder-0.5B"
 
-# tokenize the input into tokens
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
+
 # set fim format into the corresponding file you need to infilling
 input_text = """<|repo_name|>library-system
 <|file_sep|>library.py
@@ -292,12 +294,10 @@ def main():
 if __name__ == "__main__":
     main()<|fim_middle|>
 """
-model_inputs = tokenizer([input_text], return_tensors="pt").to(device)
+model_inputs = tokenizer([input_text], return_tensors="pt").to(model.device)
 
-# Use `max_new_tokens` to control the maximum output length.
-eos_token_ids = [151664, 151662, 151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
+eos_token_ids = [151659, 151660, 151661, 151662, 151663, 151664, 151643, 151645]
 generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=1024, do_sample=False, eos_token_id=eos_token_ids)[0]
-# The generated_ids include prompt_ids, so we only need to decode the tokens after prompt_ids.
 output_text = tokenizer.decode(generated_ids[len(model_inputs.input_ids[0]):], skip_special_tokens=True)
 
 print(f"Prompt: \n{input_text}\n\nGenerated text: \n{output_text.split('<|file_sep|>')[0]}")
