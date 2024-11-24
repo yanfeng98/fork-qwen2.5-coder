@@ -65,9 +65,9 @@ print(f"Prompt: {input_text}\n\nGenerated text: {output_text}")
 ```
 
 ## Repository Level Code Completion
-The repository level code completion task involves feeding the model the content of multiple files from the same repository. This enables the model to understand the interrelationships between different calls within these files, thereby facilitating the completion of code content.
-We recommend using the two special tokens `<|repo_name|>` and `<|file_sep|>` to indicate the repository structure.
-For example, assuming the repository name is stored in `repo_name`, and it contains files with their respective paths and contents listed as [(`file_path1`, `file_content1`), (`file_path2`, `file_content2`)], the format of the final input prompt would be as follows:
+
+The repository level code completion task involves feeding the model the content of multiple files from the same repository. This enables the model to understand the interrelationships between different calls within these files, thereby facilitating the completion of code content. We recommend using the two special tokens `<|repo_name|>` and `<|file_sep|>` to indicate the repository structure. For example, assuming the repository name is stored in `repo_name`, and it contains files with their respective paths and contents listed as [(`file_path1`, `file_content1`), (`file_path2`, `file_content2`)], the format of the final input prompt would be as follows:
+
 ```python
 input_text = f'''<|repo_name|>{repo_name}
 <|file_sep|>{file_path1} 
@@ -75,18 +75,18 @@ input_text = f'''<|repo_name|>{repo_name}
 <|file_sep|>{file_path2} 
 {file_content2}'''
 ```
+
 Below is a complete example of a repository level code completion task:
 
 ```python
 from transformers import AutoTokenizer, AutoModelForCausalLM
-device = "cuda" # the device to load the model onto
 
-# Now you do not need to add "trust_remote_code=True"
-tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-Coder-0.5B")
-model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-Coder-0.5B", device_map="auto").eval()
+model_name = "Qwen/Qwen2.5-Coder-0.5B"
 
-# tokenize the input into tokens
-input_text = """<repo_name>library-system
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, device_map="auto")
+
+input_text = """<|repo_name|>library-system
 <|file_sep|>library.py
 class Book:
     def __init__(self, title, author, isbn, copies):
@@ -151,18 +151,18 @@ def main():
     
     # Student borrows a book
 """
-model_inputs = tokenizer([input_text], return_tensors="pt").to(device)
+model_inputs = tokenizer([input_text], return_tensors="pt").to(model.device)
 
-# Use `max_new_tokens` to control the maximum output length.
-eos_token_ids = [151664, 151662, 151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
+eos_token_ids = [151659, 151660, 151661, 151662, 151663, 151664, 151645, 151643]
+
 generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=1024, do_sample=False, eos_token_id=eos_token_ids)[0]
-# The generated_ids include prompt_ids, so we only need to decode the tokens after prompt_ids.
 output_text = tokenizer.decode(generated_ids[len(model_inputs.input_ids[0]):], skip_special_tokens=True)
 
 print(f"Prompt: \n{input_text}\n\nGenerated text: \n{output_text.split('<|file_sep|>')[0]}")
-
 ```
+
 The expected output as following:
+
 ```
 Generated text:
     book = library.find_book("1234567890")
