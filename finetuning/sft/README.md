@@ -1,21 +1,17 @@
 ## Setup
+   
+1. **Install Dependencies**
+   
+   ```bash
+   python -m venv env
+   source env/bin/activate
+   pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple/
+   pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
+   ```
+2. **Binarize Data**
 
-1. **Create a Conda Environment**
-   Use the following command to create and activate a new environment for the SFT training:
+   Provide the raw data as follow (the raw jsonl file contains json object (each line)):
    
-   ```bash
-   conda create -n sft_env python=3.9
-   conda activate sft_env
-   ```
-2. **Install Dependencies**
-   After activating the environment, install all required dependencies by running:
-   
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Binarize Data**
-   Provide the raw data as follow:
-   the raw jsonl file contains json object (each line).
    ```json
    {
         "messages":[
@@ -37,7 +33,7 @@
    TOKENIZER_PATH="/path/to/pretrained_models/Qwen/Qwen2___5-Coder-1___5B/"
    bash ./scripts/binarize_data.sh 
    ```
-4. **Training**
+3. **Training**
    Once the environment is ready and the model paths are configured, run the evaluation suite by executing the following script:
    
    ```bash
