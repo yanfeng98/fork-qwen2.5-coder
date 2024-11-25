@@ -1,43 +1,42 @@
 """
 # Full training
 python sft.py \
-    --model_name_or_path Qwen/Qwen2-0.5B \
-    --dataset_name trl-lib/Capybara \
+    --model_name_or_path Qwen/Qwen2.5-Coder-0.5B-Instruct \
+    --dataset_name alpaca_gpt4 \
     --learning_rate 2.0e-5 \
     --num_train_epochs 1 \
-    --packing \
+    --max_steps=-1 \
     --per_device_train_batch_size 2 \
     --gradient_accumulation_steps 8 \
     --gradient_checkpointing \
+    --max_seq_length=512 \
+    --bf16=True \
     --logging_steps 25 \
-    --eval_strategy steps \
-    --eval_steps 100 \
     --output_dir Qwen2-0.5B-SFT \
-    # --max_seq_length=2048 \
-    # --bf16=True \
-    # --max_steps=-1 \
-    # --push_to_hub
+    # --eval_strategy steps \
+    # --eval_steps 100 \
+    # --packing
 
 # LoRA
 python sft.py \
-    --model_name_or_path Qwen/Qwen2-0.5B \
-    --dataset_name trl-lib/Capybara \
+    --model_name_or_path Qwen/Qwen2.5-Coder-0.5B-Instruct \
+    --dataset_name alpaca_gpt4 \
     --learning_rate 2.0e-4 \
     --num_train_epochs 1 \
-    --packing \
+    --max_steps=-1 \
     --per_device_train_batch_size 2 \
     --gradient_accumulation_steps 8 \
-    --max_seq_length=2048 \
+    --gradient_checkpointing \
+    --max_seq_length=512 \
     --bf16=True \
     --logging_steps 25 \
-    --eval_strategy steps \
-    --eval_steps 100 \
-    --max_steps=-1 \
-    --gradient_checkpointing \
     --use_peft \
     --lora_r 32 \
     --lora_alpha 16 \
     --output_dir Qwen2-0.5B-SFT
+    # --eval_strategy steps \
+    # --eval_steps 100 \
+    # --packing \
 
 # deepspeed
 accelerate launch --config_file=accelerate_configs/deepspeed_zero{1,2,3}.yaml --num_processes {NUM_GPUS} path_to_your_script.py --all_arguments_of_the_script
@@ -131,9 +130,9 @@ if __name__ == "__main__":
     ################
     # Dataset
     ################
-    dataset = load_dataset(script_args.dataset_name)
-    # dataset = load_dataset("json", data_files="./alpaca_gpt4_data_zh.json")
-    # print(dataset)
+    # dataset = load_dataset(script_args.dataset_name)
+    dataset = load_dataset("json", name=script_args.dataset_name, data_files="./alpaca_gpt4_data_zh.json")
+    print(dataset)
 
     ################
     # Training
@@ -142,8 +141,8 @@ if __name__ == "__main__":
         model=model_config.model_name_or_path,
         args=training_args,
         train_dataset=dataset[script_args.dataset_train_split],
-        eval_dataset=dataset[script_args.dataset_test_split] if training_args.eval_strategy != "no" else None,
-        # formatting_func=formatting_prompts_func,
+        # eval_dataset=dataset[script_args.dataset_test_split] if training_args.eval_strategy != "no" else None,
+        formatting_func=formatting_prompts_func,
         processing_class=tokenizer,
         peft_config=get_peft_config(model_config),
     )
