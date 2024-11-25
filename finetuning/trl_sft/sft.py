@@ -1,34 +1,42 @@
 """
-# regular:
+# Full training
 python sft.py \
-    --model_name_or_path="../model/Meta-Llama-3___1-8B-Instruct" \
-    --learning_rate=1.41e-5 \
-    --per_device_train_batch_size=2 \
-    --gradient_accumulation_steps=4 \
+    --model_name_or_path Qwen/Qwen2-0.5B \
+    --dataset_name trl-lib/Capybara \
+    --learning_rate 2.0e-5 \
+    --num_train_epochs 1 \
+    --packing \
+    --per_device_train_batch_size 2 \
+    --gradient_accumulation_steps 8 \
     --max_seq_length=2048 \
     --bf16=True \
-    --output_dir="full_alpaca_gpt4_data_zh" \
-    --logging_steps=20 \
-    --num_train_epochs=3 \
+    --gradient_checkpointing \
+    --logging_steps 25 \
     --max_steps=-1 \
-    --gradient_checkpointing
+    --eval_strategy steps \
+    --eval_steps 100 \
+    --output_dir Qwen2-0.5B-SFT \
 
-# peft:
+# LoRA
 python sft.py \
-    --model_name_or_path="../model/Meta-Llama-3___1-8B-Instruct" \
-    --learning_rate=1.41e-5 \
-    --per_device_train_batch_size=2 \
-    --gradient_accumulation_steps=4 \
+    --model_name_or_path Qwen/Qwen2-0.5B \
+    --dataset_name trl-lib/Capybara \
+    --learning_rate 2.0e-4 \
+    --num_train_epochs 1 \
+    --packing \
+    --per_device_train_batch_size 2 \
+    --gradient_accumulation_steps 8 \
     --max_seq_length=2048 \
     --bf16=True \
-    --output_dir="lora_alpaca_gpt4_data_zh" \
-    --logging_steps=20 \
-    --num_train_epochs=3 \
+    --logging_steps 25 \
+    --eval_strategy steps \
+    --eval_steps 100 \
     --max_steps=-1 \
     --gradient_checkpointing \
     --use_peft \
-    --lora_r=64 \
-    --lora_alpha=16
+    --lora_r 32 \
+    --lora_alpha 16 \
+    --output_dir Qwen2-0.5B-SFT
 
 # deepspeed
 accelerate launch --config_file=accelerate_configs/deepspeed_zero{1,2,3}.yaml --num_processes {NUM_GPUS} path_to_your_script.py --all_arguments_of_the_script
@@ -53,7 +61,7 @@ from transformers import AutoTokenizer
 from trl import (
     ModelConfig,
     SFTConfig,
-    SFTScriptArguments,
+    ScriptArguments,
     SFTTrainer,
     TrlParser,
     get_kbit_device_map,
@@ -97,7 +105,7 @@ Below is an instruction that describes a task, paired with an input that provide
 
 
 if __name__ == "__main__":
-    parser = TrlParser((SFTScriptArguments, SFTConfig, ModelConfig))
+    parser = TrlParser((ScriptArguments, SFTConfig, ModelConfig))
     script_args, training_args, model_config = parser.parse_args_and_config()
 
     ################
@@ -133,9 +141,9 @@ if __name__ == "__main__":
         model=model_config.model_name_or_path,
         args=training_args,
         train_dataset=dataset[script_args.dataset_train_split],
-        # eval_dataset=dataset[script_args.dataset_test_split],
+        # eval_dataset=dataset[script_args.dataset_test_split] if training_args.eval_strategy != "no" else None,
         formatting_func=formatting_prompts_func,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         peft_config=get_peft_config(model_config),
     )
 
@@ -143,3 +151,5 @@ if __name__ == "__main__":
 
     # Save and push to hub
     trainer.save_model(training_args.output_dir)
+    if training_args.push_to_hub:
+        trainer.push_to_hub(dataset_name=script_args.dataset_name)
