@@ -53,7 +53,7 @@ accelerate launch --config_file=accelerate_configs/deepspeed_zero3.yaml --num_pr
     --max_seq_length 512 \
     --bf16 True \
     --logging_steps 25 \
-    --output_dir Qwen2-0.5B-SFT \
+    --output_dir Qwen2.5-Coder-7B-Instruct-SFT \
     # --eval_strategy steps \
     # --eval_steps 100 \
     # --packing
