@@ -1,6 +1,6 @@
 """
 # Full training
-python sft.py \
+CUDA_VISIBLE_DEVICES=0 python sft.py \
     --model_name_or_path Qwen/Qwen2.5-Coder-0.5B-Instruct \
     --dataset_name alpaca_gpt4 \
     --learning_rate 2.0e-5 \
@@ -18,7 +18,7 @@ python sft.py \
     # --packing
 
 # LoRA
-python sft.py \
+CUDA_VISIBLE_DEVICES=0 python sft.py \
     --model_name_or_path Qwen/Qwen2.5-Coder-0.5B-Instruct \
     --dataset_name alpaca_gpt4 \
     --learning_rate 2.0e-4 \
