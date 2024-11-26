@@ -5,12 +5,12 @@ CUDA_VISIBLE_DEVICES=0 python sft.py \
     --dataset_name alpaca_gpt4 \
     --learning_rate 2.0e-5 \
     --num_train_epochs 1 \
-    --max_steps=-1 \
+    --max_steps -1 \
     --per_device_train_batch_size 2 \
     --gradient_accumulation_steps 8 \
     --gradient_checkpointing \
-    --max_seq_length=512 \
-    --bf16=True \
+    --max_seq_length 512 \
+    --bf16 True \
     --logging_steps 25 \
     --output_dir Qwen2-0.5B-SFT \
     # --eval_strategy steps \
@@ -23,12 +23,12 @@ CUDA_VISIBLE_DEVICES=0 python sft.py \
     --dataset_name alpaca_gpt4 \
     --learning_rate 2.0e-4 \
     --num_train_epochs 1 \
-    --max_steps=-1 \
+    --max_steps -1 \
     --per_device_train_batch_size 2 \
     --gradient_accumulation_steps 8 \
     --gradient_checkpointing \
-    --max_seq_length=512 \
-    --bf16=True \
+    --max_seq_length 512 \
+    --bf16 True \
     --logging_steps 25 \
     --use_peft \
     --lora_r 32 \
@@ -41,18 +41,22 @@ CUDA_VISIBLE_DEVICES=0 python sft.py \
 # deepspeed
 accelerate launch --config_file=accelerate_configs/deepspeed_zero{1,2,3}.yaml --num_processes {NUM_GPUS} path_to_your_script.py --all_arguments_of_the_script
 
-accelerate launch --config_file=accelerate_configs/deepspeed_zero3.yaml --num_processes 8 sft.py \
-    --model_name_or_path="../model/Meta-Llama-3___1-8B-Instruct" \
-    --learning_rate=1.41e-5 \
-    --per_device_train_batch_size=2 \
-    --gradient_accumulation_steps=4 \
-    --max_seq_length=2048 \
-    --bf16=True \
-    --output_dir="full_alpaca_gpt4_data_zh" \
-    --logging_steps=20 \
-    --num_train_epochs=3 \
-    --max_steps=-1 \
-    --gradient_checkpointing
+accelerate launch --config_file=accelerate_configs/deepspeed_zero3.yaml --num_processes 7 sft.py \
+    --model_name_or_path Qwen/Qwen2.5-Coder-0.5B-Instruct \
+    --dataset_name alpaca_gpt4 \
+    --learning_rate 2.0e-5 \
+    --num_train_epochs 3 \
+    --max_steps -1 \
+    --per_device_train_batch_size 2 \
+    --gradient_accumulation_steps 4 \
+    --gradient_checkpointing \
+    --max_seq_length 512 \
+    --bf16 True \
+    --logging_steps 25 \
+    --output_dir Qwen2-0.5B-SFT \
+    # --eval_strategy steps \
+    # --eval_steps 100 \
+    # --packing
 """
 
 from datasets import load_dataset
