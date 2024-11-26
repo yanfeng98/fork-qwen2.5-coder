@@ -41,7 +41,7 @@ CUDA_VISIBLE_DEVICES=0 python sft.py \
 # deepspeed
 accelerate launch --config_file=accelerate_configs/deepspeed_zero{1,2,3}.yaml --num_processes {NUM_GPUS} path_to_your_script.py --all_arguments_of_the_script
 
-accelerate launch --config_file=accelerate_configs/deepspeed_zero3.yaml --num_processes 7 sft.py \
+accelerate launch --config_file=accelerate_configs/deepspeed_zero3.yaml --num_processes 8 sft.py \
     --model_name_or_path Qwen/Qwen2.5-Coder-7B-Instruct \
     --dataset_name alpaca_gpt4 \
     --learning_rate 2.0e-5 \
